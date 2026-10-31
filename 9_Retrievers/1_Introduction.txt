@@ -1,0 +1,10 @@
+A retriever is a component in LangChain that fetches relevant documents from a
+data source in response to a user's query.
+
+There are multiple types of retrievers
+
+All retrievers in LangChain are runnables
+- Wikipedia Retriever
+- A Vector Store Retriever in LangChain is the most common type of retriever that lets you
+search and fetch documents from a vector store based on semantic similarity using vector
+embeddings.

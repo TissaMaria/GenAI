@@ -1,0 +1,104 @@
+The Model Component in LangChain is a crucial part of the framework, designed to facilitate
+interactions with various language models and embedding models.
+
+It abstracts the complexity of working directly with different LLMs, chat models, and
+embedding models, providing a uniform interface to communicate with them. This makes it
+easier to build applications that rely on Al-generated text, text embeddings for similarity
+search, and retrieval-augmented generation (RAG).
+
+Types of Models:
+-Language Models -> LLMs, Chat Models
+-Embedding Models
+
+Language Models
+Language Models are Al systems designed to process, generate, and understand natural
+language text.
+
+Language
+Models
+|
+---->LLM (General Purpose)
+|
+---->Chat Models (Conversational Purposes)
+
+LLMs - General-purpose models that is used for raw text generation. They take a string(or plain
+text) as input and returns a string( plain text). These are traditionally older models and are not
+used much now.
+
+Chat Models - Language models that are specialized for conversational tasks. They take a
+sequence of messages as inputs and return chat messages as outputs (as opposed to using
+plain text). These are traditionally newer models and used more in comparison to the LLMs.
+
+
+1. LLMs (Base Models)
+
+Purpose:Free-form text generation
+
+Training Data:General text corpora (books, articles)
+
+No built-in memory
+
+No understanding of "user" and "assistant"
+roles
+
+GPT-3, Llama-2-7B, Mistral-7B, OPT-1.3B
+
+Text generation, summarization, translation,
+creative writing, code generation
+
+2. Chat Models (Instruction-Tuned)
+
+Purpose: Optimized for multi-turn conversations
+
+Training Data: Fine-tuned on chat datasets (dialogues,
+user-assistant conversations)
+
+Supports structured conversation history
+
+Understands "system", "user", and
+"assistant" roles
+
+GPT-4, GPT-3.5-turbo, Llama-2-Chat,
+Mistral-Instruct, Claude
+
+Conversational Al, chatbots, virtual
+assistants, customer support, Al tutors
+
+Note: Why venv?
+Virtual environments preserve each project's working dependencies.
+A virtual environment gives each Python project its own isolated set of packages, so projects don't conflict with each other.
+Suppose you have two projects:
+
+Project A
+
+Django==4.2
+
+Project B
+
+Django==5.2
+
+If you install packages globally:
+
+pip install django==5.2
+
+Project A may stop working because it expected Django 4.2.
+
+Instead, create a separate virtual environment for each project:
+
+# Project A
+python -m venv venv
+pip install django==4.2
+
+# Project B
+python -m venv venv
+pip install django==5.2
+
+Now:
+
+Project A uses Django 4.2
+Project B uses Django 5.2
+Neither affects the other.
+
+In one sentence: A virtual environment isolates a project's dependencies so different projects can use different package versions without conflicts.
+
+venv\Scripts\Activate to activate scripts

@@ -1,0 +1,8 @@
+.env
+.env.*
+venv/
+__pycache__/
+*.py[cod]
+chathistory.txt
+**/chroma_db/
+**/compression_db_2/
