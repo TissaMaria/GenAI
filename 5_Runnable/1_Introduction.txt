@@ -1,0 +1,71 @@
+Unit of work
+Runnables in LangChain are standard units of work that take an input, perform an action, and produce an output
+Every runnable has a task
+takes input gives output
+common interface
+invoke()
+batch()-process multiple input produce multiple output
+stream()
+
+connect runnables to make a larger runnable
+ 
+
+ 1. What is a Runnable?
+A Runnable is a standard interface for components in LangChain.
+
+It basically says:
+
+“If you are a Runnable, you should be able to take an input and produce an output using invoke().”
+
+runnable.invoke(input)
+2. Why do we need Runnables?
+
+Before Runnables, different components could have different methods:
+
+Prompt → format()
+LLM    → predict()
+Parser → parse()
+
+Because the methods were different, it was difficult to create a generic chain.
+
+With Runnables:
+
+Prompt → invoke()
+LLM    → invoke()
+Parser → invoke()
+
+Now all components follow the same interface.
+
+The | is essentially a convenient way to compose Runnables into a sequence.
+
+What are Runnables in LangChain?
+
+Runnables are a common interface used by LangChain components. They provide methods like invoke() so that different components such as prompts, LLMs, parsers, and retrievers can be used in a consistent way. Since they share the same interface, their outputs can be passed directly as inputs to the next component, allowing us to easily compose chains using operators like |.
+
+
+Runnable Types - 
+1. Task Specific Runnables:
+Definition: These are core LangChain components that have been converted into Runnables so they
+can be used in pipelines.
+Purpose: Perform task-specific operations like LLM calls, prompting, retrieval, etc.
+
+2. Runnable Primitives
+Definition: These are fundamental building blocks for stuene
+Purpose: They help orchestrate execution by defining how din
+(sequentially, in parallel, conditionally, etc.).
+RunnableSequence
+RunnableParallel
+RunnablePassThrough
+RunnableLambda is a runnable primitive that allows you to apply custom Python functions
+within an Al pipeline.
+
+It acts as a middleware between different Al components, enabling preprocessing,
+transformation, API calls, filtering, and post-processing in a LangChain workflow.
+like cleaning input data, count the number of words in output
+
+Runnable Branch (if else)
+
+
+LCEL -LangChain Expression Language
+instead of using RunnableSequence()
+use pipes(|)

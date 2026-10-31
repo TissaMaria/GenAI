@@ -1,0 +1,91 @@
+Vector store is a database/storage system used to store vector embeddings.
+Embeddings are numerical representations of text, images, or other data.
+Instead of searching only for exact words, vector stores allow similarity-based search.
+Store embeddings
+Store the vector representation of documents/chunks.
+Fast similarity search
+Find the chunks that are most similar to a user's query.
+Semantic search
+Search based on meaning, not just keywords.
+Used in RAG
+Vector stores are a major component of Retrieval-Augmented Generation (RAG).
+Documents
+    ↓
+Split into chunks
+    ↓
+Create embeddings
+    ↓
+Store in Vector Store
+    ↓
+User Query
+    ↓
+Query Embedding
+    ↓
+Similarity Search
+    ↓
+Relevant Chunks
+    ↓
+LLM
+    ↓
+Answer
+Handle large amounts of information
+Instead of sending an entire document to the LLM, retrieve only the relevant chunks.
+Improves LLM answers
+The LLM receives relevant information as context, which can make answers more accurate and grounded.
+
+Intelligent Semantic search to avoid searching all the embeddings in the database
+vector store takes care of all these things
+
+4 key features
+
+1. Storage - Ensures that vectors and their associated metadata are retained, whether in-
+memory(RAM) for quick lookups or on-disk(Hard drive,persistent) for durability and Targe-scale use.
+
+2. Similarity Search - Helps retrieve the vectors most similar to a query vector.
+
+3. Indexing - Provide a data structure or method that enables fast similarity searches on
+high-dimensional vectors (e.g., approximate nearest neighbor lookups).
+For clusters to search rather than going through all vectors when doing similarity search
+
+4. CRUD Operations . Manage the lifecycle of data-adding new vectors, reading them,
+updating existing entries, removing outdated vectors.
+
+· Vector Store
+
+o Typically refers to a lightweight library or service that focuses on storing vectors
+(embeddings) and performing similarity search.
+
+o May not include many traditional database features like transactions, rich query
+languages, or role-based access control.
+
+o Ideal for prototyping, smaller-scale applications
+
+o Examples: FAISS (where you store vectors and can query them by similarity, but you
+handle persistence and scaling separately).
+
+· Vector Database=
+vector store+database features
+o A full-fledged database system designed to store and query vectors.
+
+o Offers additional "database-like" features:
+. Distributed architecture for horizontal scaling
+. Durability and persistence (replication, backup/restore)
+· Metadata handling (schemas, filters)
+. Potential for ACID or near-ACID guarantees
+. Authentication/authorization and more advanced security
+
+o Geared for production environments with significant scaling, large datasets
+
+Vector Stores in Langchain
+
+. Supported Stores: LangChain integrates with multiple vector stores (FAISS, Pinecone, Chroma,
+Qdrant, Weaviate, etc.), giving you flexibility in scale, features, and deployment.
+
+. Common Interface: A uniform Vector Store API lets you swap out one backend (e.g., FAISS) for
+another (e.g., Pinecone) with minimal code changes.
+
+. Metadata Handling: Most vector stores in LangChain allow you to attach metadata (e.g.,
+timestamps, authors) to each document, enabling filter-based retrieval.
+
+Chroma is a lightweight open source database that is especially friendly for local development 
+

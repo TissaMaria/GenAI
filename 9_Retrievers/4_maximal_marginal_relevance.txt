@@ -1,0 +1,22 @@
+"How can we pick results that are not only relevant to the query but also different from each other?"
+
+MMR is an information retrieval algorithm designed to reduce redundancy in the retrieved
+results while maintaining high relevance to the query.
+
+Why MMR Retriever?
+In regular similarity search, you may get documents that are:
+. All very similar to each other
+. Repeating the same info
+
+. Lacking diverse perspectives
+
+MMR Retriever avoids that by:
+
+. Picking the most relevant document first
+. Then picking the next most relevant and least similar to already selected docs
+. And so on_
+
+This helps especially in RAG pipelines where:
+. You want your context window to contain diverse but still relevant information
+
+. Especially useful when documents are semantically overlapping

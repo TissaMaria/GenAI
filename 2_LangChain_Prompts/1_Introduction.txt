@@ -1,0 +1,73 @@
+Prompts are the input instructions or queries fiven to a model to guide its output
+Static Prompts
+Dynamic Prompts
+
+A PromptTemplate in LangChain is a structured way to create prompts dynamically by
+inserting variables into a predefined template. Instead of hardcoding prompts,
+PromptTemplate allows you to define placeholders that can be filled in at runtime with
+different inputs.
+
+This makes it reusable, flexible, and easy to manage, especially when working with dynamic
+user inputs or automated workflows.
+
+Why use
+
+1. Default validation
+D2. Reusable  (generate a json file with template use it anywhere)
+3. LangChain Ecosystem
+
+# ============================
+# LangChain Model.invoke()
+# ============================
+
+# A model can be invoked in two ways:
+#
+# 1. Single Message
+#    - Used for single-turn, standalone queries.
+#    - No conversation history is maintained.
+#
+#    Types:
+#      • Static Message
+#          - Hardcoded prompt.
+#          - Example:
+#              model.invoke("What is AI?")
+#
+#      • Dynamic Message (PromptTemplate)
+#          - Prompt is generated using variables.
+#          - Example:
+#              prompt = PromptTemplate(...)
+#              model.invoke(prompt.format(name="Alice"))
+#
+#
+# 2. List of Messages
+#    - Used for multi-turn conversations (chat history).
+#    - The model receives the entire conversation context.
+#
+#    Types:
+#      • Static Messages
+#          - Manually create a fixed conversation using:
+#              - SystemMessage
+#              - HumanMessage
+#              - AIMessage
+#
+#      • Dynamic Messages
+            - chat prompt template
+#          - Conversation history is built dynamically.
+#          - Messages are added/updated during runtime
+#            (e.g., chat applications, memory, user interactions).
+#
+#
+# Summary:
+#
+# model.invoke(...)
+# ├── Single Message
+# │   ├── Static Message
+# │   └── Dynamic Message (PromptTemplate)
+# │
+# └── List of Messages
+#     ├── Static Messages
+#     │   ├── SystemMessage
+#     │   ├── HumanMessage
+#     │   └── AIMessage
+#     └── Dynamic Messages (runtime conversation history)
+

@@ -1,0 +1,641 @@
+# LangChain Structured Output & Output Parsers
+
+---
+
+# Structured Output
+
+Structured output means forcing an LLM to return data in a predefined structure (usually JSON) instead of free-form text.
+
+Instead of generating text for humans, the model generates data that programs can reliably consume.
+
+### Example
+
+**Prompt**
+
+```text
+Create a one-day travel itinerary for Paris.
+```
+
+**Unstructured Output**
+
+```text
+Morning: Visit the Eiffel Tower.
+Afternoon: Explore the Louvre.
+Evening: Dinner near the Seine.
+```
+
+**Structured Output**
+
+```json
+[
+  {
+    "time": "Morning",
+    "activity": "Visit the Eiffel Tower"
+  },
+  {
+    "time": "Afternoon",
+    "activity": "Explore the Louvre"
+  },
+  {
+    "time": "Evening",
+    "activity": "Dinner near the Seine"
+  }
+]
+```
+
+---
+
+# Why Structured Output?
+
+* Data Extraction
+* AI Agents
+* API Responses
+* Database Storage
+* Reliable Automation
+* Easier Parsing
+* Workflow Integration
+
+---
+
+# `with_structured_output()`
+
+LangChain provides
+
+```python
+structured_model = model.with_structured_output(schema)
+```
+
+to automatically enforce an output schema.
+
+Internally, LangChain chooses the best mechanism supported by the underlying model.
+
+```
+with_structured_output(schema)
+│
+├── JSON Mode
+│      ├── TypedDict
+│      └── JSON Schema
+│
+└── Function Calling (Tool Calling)
+       └── Pydantic (most providers)
+```
+
+> The exact implementation depends on the LLM provider.
+>
+> * OpenAI → JSON Mode + Function Calling
+> * Anthropic → Tool Calling
+> * Gemini → Structured Output
+> * Many HuggingFace models → JSON generation only
+> * Some local models → Neither (use Output Parsers)
+
+---
+
+# Supported Schema Types
+
+## 1. TypedDict
+
+`TypedDict` describes the expected dictionary structure.
+
+It provides **type hints only**.
+
+```python
+from typing import TypedDict
+
+class Person(TypedDict):
+    name: str
+    age: int
+```
+
+### Features
+
+* Type hints
+* Nested dictionaries
+* Optional fields
+* Literal values
+* No runtime validation
+
+### Typical Mechanism
+
+```
+JSON Mode
+```
+
+### Pros
+
+* Lightweight
+* Simple
+* Easy to write
+* Good IDE support
+
+### Cons
+
+* No validation
+* No type conversion
+* Invalid outputs are accepted
+
+### Best Use Cases
+
+* Simple JSON outputs
+* Small APIs
+* Fast prototypes
+* Internal tools
+
+---
+
+## 2. Pydantic
+
+Pydantic performs **runtime validation** of generated data.
+
+```python
+from pydantic import BaseModel
+
+class Student(BaseModel):
+    name: str
+    age: int
+```
+
+Example
+
+```python
+student = Student(
+    name="Tissa",
+    age="22"
+)
+
+print(student.age)
+```
+
+Output
+
+```python
+22
+```
+
+(age converted automatically)
+
+### Features
+
+* Runtime validation
+* Type conversion
+* Default values
+* Constraints
+* Field descriptions
+* Nested models
+
+### Typical Mechanism
+
+```
+Function Calling
+(Tool Calling)
+```
+
+### Pros
+
+* Very reliable
+* Automatic validation
+* Automatic conversions
+* Excellent error handling
+* Best developer experience
+
+### Cons
+
+* Slightly more verbose
+* Small validation overhead
+
+### Best Use Cases
+
+* AI Agents
+* APIs
+* Production applications
+* Database insertion
+* User-facing applications
+
+---
+
+## 3. JSON Schema
+
+JSON Schema is a language-independent specification describing JSON structure.
+
+Example
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "age": {
+      "type": "integer"
+    }
+  },
+  "required": ["name"]
+}
+```
+
+### Features
+
+* Required fields
+* Data types
+* Arrays
+* Objects
+* Nested schemas
+* Constraints
+
+### Typical Mechanism
+
+```
+JSON Mode
+```
+
+### Pros
+
+* Language independent
+* Widely supported
+* Good for APIs
+* Highly configurable
+
+### Cons
+
+* Verbose
+* Harder to write manually
+* No Python object creation
+
+### Best Use Cases
+
+* REST APIs
+* Cross-language applications
+* API specifications
+* External integrations
+
+---
+
+# JSON Mode vs Function Calling
+
+## JSON Mode
+
+The model is instructed to generate valid JSON.
+
+```
+Prompt
+      │
+      ▼
+LLM
+      │
+      ▼
+JSON Output
+```
+
+Commonly used with
+
+* TypedDict
+* JSON Schema
+
+### Advantages
+
+* Simple
+* Fast
+* Less overhead
+
+### Limitations
+
+* No automatic validation
+* Model can still generate invalid JSON
+* No tool execution
+
+---
+
+## Function Calling (Tool Calling)
+
+Instead of generating text, the model returns a structured tool/function call.
+
+```
+Prompt
+      │
+      ▼
+LLM
+      │
+      ▼
+Function Call
+      │
+      ▼
+Arguments
+      │
+      ▼
+Tool Execution
+      │
+      ▼
+Structured Result
+```
+
+Usually paired with
+
+* Pydantic
+
+### Advantages
+
+* Reliable
+* Runtime validation
+* Native tool integration
+* Excellent for agents
+
+### Limitations
+
+* Requires model support
+* Slightly slower
+* More tokens
+
+---
+
+# Choosing a Schema
+
+| Schema      | Runtime Validation | Python Objects | Typical Mechanism | Best For                           |
+| ----------- | ------------------ | -------------- | ----------------- | ---------------------------------- |
+| TypedDict   | ❌                  | Dictionary     | JSON Mode         | Simple structured JSON             |
+| JSON Schema | ❌                  | Dictionary     | JSON Mode         | APIs, language-independent systems |
+| Pydantic    | ✅                  | Python Objects | Function Calling  | Production apps, Agents            |
+
+---
+
+# When `with_structured_output()` Cannot Be Used
+
+Some models don't support
+
+* JSON Mode
+* Function Calling
+* Tool Calling
+
+In that case use **Output Parsers**.
+
+```
+Prompt
+      │
+      ▼
+LLM
+      │
+      ▼
+Raw Text
+      │
+      ▼
+Output Parser
+      │
+      ▼
+Python Object
+```
+
+---
+
+# Output Parsers
+
+Output Parsers convert raw LLM responses into structured Python objects.
+
+Unlike `with_structured_output()`, they **do not require model support**.
+
+```
+Prompt
+      │
+      ▼
+LLM
+      │
+      ▼
+Text
+      │
+      ▼
+Parser
+      │
+      ▼
+Structured Data
+```
+
+---
+
+# Types of Output Parsers
+
+## 1. StrOutputParser
+
+Returns the model output as a plain string.
+
+```
+Prompt
+      │
+      ▼
+LLM
+      │
+      ▼
+String
+```
+
+### Returns
+
+```python
+str
+```
+
+### Pros
+
+* Simplest parser
+* Fast
+* No formatting restrictions
+
+### Cons
+
+* No validation
+* No structured output
+
+### Best Use Cases
+
+* Chatbots
+* Text generation
+* Summaries
+* Translation
+* Content generation
+
+---
+
+## 2. JsonOutputParser
+
+Parses LLM output into JSON.
+
+```
+Prompt
+      │
+      ▼
+LLM
+      │
+      ▼
+JSON
+      │
+      ▼
+Python Dict
+```
+
+### Returns
+
+```python
+dict
+```
+
+### Pros
+
+* Easy to use
+* Native Python dictionaries
+* Supports nested JSON
+* Good for APIs
+
+### Cons
+
+* Requires valid JSON
+* No runtime validation
+
+### Best Use Cases
+
+* Data extraction
+* API responses
+* Configuration generation
+* Simple automation
+
+---
+
+## 3. StructuredOutputParser
+
+Uses predefined `ResponseSchema` fields to instruct the LLM to return structured JSON.
+
+```python
+ResponseSchema
+      │
+      ▼
+StructuredOutputParser
+      │
+      ▼
+Format Instructions
+      │
+      ▼
+LLM
+      │
+      ▼
+Structured JSON
+```
+
+### Returns
+
+```python
+dict
+```
+
+### Pros
+
+* Easy field specification
+* Better guidance than plain JSON parsing
+* Works with most LLMs
+
+### Cons
+
+* No runtime validation
+* Relies on prompt engineering
+* Can still produce malformed JSON
+
+### Best Use Cases
+
+* Information extraction
+* Forms
+* Reports
+* Structured responses from models without native structured output
+
+---
+
+## 4. PydanticOutputParser
+
+Parses output into a Pydantic model and validates it.
+
+```
+Prompt
+      │
+      ▼
+LLM
+      │
+      ▼
+JSON
+      │
+      ▼
+Pydantic Validation
+      │
+      ▼
+Python Object
+```
+
+### Returns
+
+```python
+Pydantic Model
+```
+
+### Pros
+
+* Runtime validation
+* Automatic type conversion
+* Strong error handling
+* Production-ready
+
+### Cons
+
+* More verbose
+* Requires Pydantic models
+* Fails if validation fails
+
+### Best Use Cases
+
+* Production applications
+* AI pipelines
+* APIs
+* Data validation
+* Agents
+
+---
+
+# Structured Output vs Output Parsers
+
+| Feature                         | with_structured_output() | Output Parsers            |
+| ------------------------------- | ------------------------ | ------------------------- |
+| Requires model support          | ✅                        | ❌                         |
+| Works with any LLM              | ❌                        | ✅                         |
+| More reliable                   | ✅                        | Less                      |
+| Uses JSON Mode/Function Calling | ✅                        | ❌                         |
+| Prompt-based formatting         | Sometimes                | ✅                         |
+| Runtime validation              | Pydantic only            | PydanticOutputParser only |
+| Recommended when supported      | ✅                        | Backup option             |
+
+---
+
+# Which One Should You Use?
+
+| Situation                                               | Recommended Choice                                           |
+| ------------------------------------------------------- | ------------------------------------------------------------ |
+| OpenAI, Gemini, Anthropic with native structured output | `with_structured_output()`                                   |
+| Local/Hugging Face model without native support         | Output Parser                                                |
+| Simple text generation                                  | `StrOutputParser`                                            |
+| JSON dictionary                                         | `JsonOutputParser`                                           |
+| Fixed JSON fields                                       | `StructuredOutputParser`                                     |
+| Validated Python objects                                | `PydanticOutputParser` or `with_structured_output(Pydantic)` |
+| AI Agents                                               | `with_structured_output(Pydantic)`                           |
+| Production systems                                      | `with_structured_output(Pydantic)`                           |
+| Quick prototypes                                        | `TypedDict` or `JsonOutputParser`                            |
+
+---
+
+# Final Comparison
+
+| Method                                | Validation | Returns        | Requires Model Support | Typical Use                                 |
+| ------------------------------------- | ---------- | -------------- | ---------------------- | ------------------------------------------- |
+| StrOutputParser                       | ❌          | `str`          | ❌                      | Chat, summaries, content generation         |
+| JsonOutputParser                      | ❌          | `dict`         | ❌                      | JSON extraction                             |
+| StructuredOutputParser                | ❌          | `dict`         | ❌                      | Structured field extraction                 |
+| PydanticOutputParser                  | ✅          | Pydantic Model | ❌                      | Validated structured data                   |
+| `with_structured_output(TypedDict)`   | ❌          | `dict`         | ✅                      | Native JSON Mode                            |
+| `with_structured_output(JSON Schema)` | ❌          | `dict`         | ✅                      | Native JSON Mode                            |
+| `with_structured_output(Pydantic)`    | ✅          | Pydantic Model | ✅                      | Function Calling / Native Structured Output |
+
+> **Rule of Thumb**
+>
+> * **If your model supports native structured output, prefer `with_structured_output()`**—it's more reliable because the model is guided at generation time.
+> * **If it doesn't, use an appropriate Output Parser** to convert and (optionally) validate the model's text response.
+> * **For production applications, Pydantic is generally the best choice** due to its runtime validation and type safety.

@@ -1,0 +1,100 @@
+Here’s a concise completion of your notes:
+
+### LLM + Fine-Tuning vs RAG
+
+**Basic LLM Flow**
+
+```text
+Query → LLM → Response
+```
+
+### Fine-Tuning
+
+* Fine-tuning can be done on **pretrained models**.
+* Train the model further on **domain/specific data**.
+* **Supervised Fine-Tuning (SFT):** Uses labeled input-output data.
+* Model **weights are updated** during training.
+
+**Disadvantages**
+
+* Requires **technical expertise & computational resources**.
+* Training can be **time-consuming and expensive**.
+* Knowledge updates require **retraining/fine-tuning**.
+* Risk of **overfitting / catastrophic forgetting**.
+
+---
+
+### RAG (Retrieval-Augmented Generation)
+
+Instead of modifying model weights, provide **relevant external knowledge** to the LLM.
+
+**Flow**
+
+```text
+Documents
+   ↓
+Indexing → Knowledge Base
+   ↓
+User Query
+   ↓
+Retrieval → Relevant Chunks
+   ↓
+LLM + Query + Context
+   ↓
+Response
+```
+
+### 1. Indexing — Create External Knowledge Base
+
+* **Document Ingestion** → Load documents/data.
+* **Text Chunking** → Split documents into smaller chunks.
+* **Embedding Generation** → Convert chunks into vectors.
+* **Storage** → Store vectors + metadata in a **Vector Database**.
+
+### 2. Retrieval
+
+* Convert user query into an **embedding**.
+* Find **similar/relevant chunks** from the vector database.
+* Return the top relevant chunks as **context**.
+
+### 3. Generation
+
+* LLM receives:
+
+  * **User Query**
+  * **Retrieved Context**
+* Generates a response using the provided context.
+
+### Why RAG?
+
+* **No model retraining** required for new information.
+* Knowledge can be **updated easily** by updating the knowledge base.
+* Can provide **source/context-based answers**.
+* Reduces reliance on the LLM's **parametric knowledge**.
+Key Difference
+
+Fine-Tuning → Changes model weights
+RAG         → Changes/provides model context
+
+
+Documents
+    ↓
+Text Splitting
+    ↓
+Chunks
+    ↓
+Embedding Model
+    ↓
+Vector Store
+    ↓
+                  User Query
+                      ↓
+                Query Embedding
+                      ↓
+                Similarity Search
+                      ↓
+               Relevant Chunks
+                      ↓
+            Query + Context → LLM
+                      ↓
+                   Response
